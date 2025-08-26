@@ -26,7 +26,7 @@ export default function Robots() {
   const [imagePreviews, setImagePreviews] = useState([]); // {id, src, file, isNew}
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
+ const [filterType, setFilterType] = useState("all");
   useEffect(() => {
     fetchRobots();
   }, []);
@@ -41,7 +41,7 @@ export default function Robots() {
         name: r.p_name,
         price: r.p_price,
         currency: r.currency || "",
-        category: r.category || "pricing",
+        category: r.p_buy_rent || "pricing",
         industries: [],
         image: r.productimages?.[0]?.pi_image
           ? `https://lunarsenterprises.com:7001${r.productimages[0].pi_image}`
@@ -61,7 +61,11 @@ export default function Robots() {
       (robot.industries || []).some((i) =>
         i.toLowerCase().includes(searchTerm.toLowerCase())
       );
-    return matchesSearch;
+
+    const matchesFilter =
+      filterType === "all" || robot.category?.toLowerCase() === filterType;
+
+    return matchesSearch && matchesFilter;
   });
 
   const handleAdd = () => {
@@ -76,8 +80,7 @@ export default function Robots() {
     setEditingRobot(robot);
     setFormData({
       name: robot.p_name || "",
-      rating: robot.p_rating || "",
-      short_description: robot.p_short_descrption || "",
+     short_description: robot.p_short_descrption || "",
       description: robot.p_descrption || "",
       price: robot.p_price || "",
       discount_price: robot.p_discount_price || "",
@@ -91,6 +94,19 @@ export default function Robots() {
       sensors: robot.p_sensors || "",
       connectivity: robot.p_connectivity || "",
       material: robot.p_material || "",
+rob_model: robot.p_model || "",
+      screen: robot.p_screen || "",
+      camera: robot.p_camera || "",
+      body_colour: robot.p_body_colour || "",
+      mb_ram: robot.p_ram || "",
+      stand_by_time: robot.p_stand_by_time || "",
+      head_pitch_angle: robot.p_head_pitch_angle || "",
+      system: robot.p_system || "",
+      navigation_accuracy: robot.p_navigation_accuracy || "",
+      weight: robot.p_weight || "",
+      battery_type: robot.p_battery_type || "",
+        brochure: robot.p_brochure || null,
+         buy_rent: robot.p_buy_rent || "buy",   // <-- added
       images: [],
     });
 
@@ -164,8 +180,7 @@ export default function Robots() {
       newErrors.price = "Valid price is required.";
     if (formData.discount_price && isNaN(formData.discount_price))
       newErrors.discount_price = "Discount price must be a number.";
-    if (formData.rating && (isNaN(formData.rating) || formData.rating > 5))
-      newErrors.rating = "Rating must be between 0 and 5.";
+  
     if (imagePreviews.length === 0)
       newErrors.images = "At least one image is required.";
     setErrors(newErrors);
@@ -178,7 +193,7 @@ export default function Robots() {
 
     // text fields
     formDataToSend.append("name", data.name || "");
-    formDataToSend.append("rating", String(parseFloat(data.rating) || 0));
+
     formDataToSend.append("short_description", data.short_description || "");
     formDataToSend.append("description", data.description || "");
     formDataToSend.append("price", String(parseFloat(data.price) || 0));
@@ -199,12 +214,59 @@ export default function Robots() {
     formDataToSend.append("max_speed", data.max_speed || "");
     formDataToSend.append("battery_life", data.battery_life || "");
     formDataToSend.append("charging_time", data.charging_time || "");
+    formDataToSend.append("buy_rent", data.buy_rent || "buy");
+
+
+
+    formDataToSend.append("rob_model", data.rob_model || "");
+
+    formDataToSend.append("screen", data.screen || "");
+    formDataToSend.append("body_colour", data.body_colour || "");
+    formDataToSend.append("mb_ram", data.mb_ram || "");
+    formDataToSend.append("stand_by_time", data.stand_by_time || "");
+    formDataToSend.append("head_pitch_angle", data.head_pitch_angle || "");
+    formDataToSend.append("system", data.system || "");
+    formDataToSend.append("weight", data.weight || "");
+    formDataToSend.append("camera", data.camera || "");
+
+    formDataToSend.append("navigation_accuracy", data.navigation_accuracy || "");
+
+
+
+    
+
+    
+
+    formDataToSend.append("battery_type", data.battery_type || "");
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     formDataToSend.append(
       "sensors",
       (data.sensors || "").split(",").map((s) => s.trim()).join(",")
     );
     formDataToSend.append("connectivity", data.connectivity || "");
     formDataToSend.append("material", data.material || "");
+
+      // 📄 brochure upload
+    if (data.brochureFile instanceof File) {
+      formDataToSend.append("brochure", data.brochureFile);
+    }
 
     // ✅ Send images: existing (id:binary) + new
     imagePreviews.forEach((img) => {
@@ -217,6 +279,49 @@ export default function Robots() {
 
     return formDataToSend;
   };
+
+
+  // name,
+  // rob_model, 
+
+  // short_description,
+  //  description, 
+  // price, 
+  // discount_price,
+  //  discount,
+  //   highlights,
+
+
+  //    product_used_places,
+  //    dimensions,
+
+
+  //  screen,
+
+  //  camera,
+  //  body_colour,
+
+  //  mb_ram,
+
+  //  stand_by_time,
+
+  //  head_pitch_angle,
+
+  //  system,
+
+  //  navigation_accuracy,
+
+
+  //  weight, 
+
+
+  //  max_speed,
+  //  battery_type, 
+  //  battery_life, 
+  //  charging_time, 
+  //  sensors,
+  //   connectivity, 
+  //   material
 
   const handleSave = async () => {
     if (!validateForm()) return;
@@ -261,18 +366,31 @@ export default function Robots() {
       </div>
 
       {/* Search */}
+    {/* Search + Filter */}
       <div className="bg-white p-4 rounded-lg shadow space-y-4">
-        <div className="flex-1 max-w-md">
-          <div className="relative">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Search */}
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               type="text"
               placeholder="Search robots..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md"
+              className="pl-10 pr-4 py-2 w-1/2 border border-gray-300 rounded-md"
             />
           </div>
+
+          {/* Buy / Rent Filter */}
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-5 py-2 border rounded-md border-gray-300 "
+          >
+            <option value="all">All</option>
+            <option value="buy">Buy</option>
+            <option value="rent">Rent</option>
+          </select>
         </div>
       </div>
 
@@ -307,6 +425,17 @@ export default function Robots() {
                   {robot.price} {robot.currency}
                 </p>
               )}
+
+                 {robot.p_brochure && (
+                <a
+                  href={`https://lunarsenterprises.com:7001${robot.p_brochure}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 text-sm underline mt-2 block"
+                >
+                  Download Brochure
+                </a>
+              )}
               <div className="flex justify-between mt-3">
                 <button
                   onClick={() => handleEdit(robot)}
@@ -322,6 +451,10 @@ export default function Robots() {
                 </button>
               </div>
             </div>
+
+            
+
+            
           </div>
         ))}
       </div>
@@ -343,17 +476,41 @@ export default function Robots() {
         <div className="space-y-4">
           {[
             { key: "name", label: "Name" },
-            { key: "rating", label: "Rating" },
+            { key: "rob_model", label: "Robot Model" },
             { key: "short_description", label: "Short Description" },
             { key: "description", label: "Description" },
             { key: "price", label: "Price" },
             { key: "discount_price", label: "Discount Price" },
             { key: "discount", label: "Discount" },
             { key: "highlights", label: "Highlights (comma separated)" },
+
+
             { key: "product_used_places", label: "Used Places (comma separated)" },
             { key: "dimensions", label: "Dimensions" },
+
+
+
+            { key: "screen", label: "Screen" },
+            { key: "camera", label: "Camera" },
+            { key: "body_colour", label: "Body Colour" },
+            { key: "mb_ram", label: "MB Ram" },
+            { key: "stand_by_time", label: "Stand by time" },
+            { key: "head_pitch_angle", label: "Head pitch angle" },
+            { key: "system", label: "System" },
+            { key: "navigation_accuracy", label: "Navigation Accuracy" },
+            { key: "weight", label: "Weight" },
+            
+
+
+
+
+
+
             { key: "max_speed", label: "Max Speed" },
+            { key: "battery_type", label: "Battery Type" },
+
             { key: "battery_life", label: "Battery Life" },
+
             { key: "charging_time", label: "Charging Time" },
             { key: "sensors", label: "Sensors (comma separated)" },
             { key: "connectivity", label: "Connectivity" },
@@ -378,6 +535,53 @@ export default function Robots() {
               )}
             </div>
           ))}
+
+{/* Buy / Rent */}
+<div>
+  <label className="block text-sm font-medium mb-1">Buy / Rent</label>
+  <select
+    value={formData.buy_rent || "buy"}
+    onChange={(e) =>
+      setFormData({ ...formData, buy_rent: e.target.value })
+    }
+    className="w-full px-3 py-2 border rounded-md border-gray-300"
+  >
+    <option value="Buy">Buy</option>
+    <option value="Rent">Rent</option>
+  </select>
+</div>
+
+
+          {/* 📄 Brochure Upload */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Brochure (PDF)</label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  setFormData({ ...formData, brochureFile: file });
+                }
+              }}
+              className="w-full px-3 py-2 border rounded-md border-gray-300"
+            />
+            {formData.brochure && !formData.brochureFile && (
+              <a
+                href={`https://lunarsenterprises.com:7001${formData.brochure}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 text-sm underline mt-1 block"
+              >
+                View Existing Brochure
+              </a>
+            )}
+            {formData.brochureFile && (
+              <p className="text-sm text-gray-600 mt-1">
+                Selected: {formData.brochureFile.name}
+              </p>
+            )}
+          </div>
 
           {/* Image Upload */}
           <div>

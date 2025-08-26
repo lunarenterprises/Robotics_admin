@@ -21,6 +21,7 @@ type Banner = {
   id: string;
   image?: string;
   video?: string;
+  text:string;
 };
 
   const bannerTypes = [
