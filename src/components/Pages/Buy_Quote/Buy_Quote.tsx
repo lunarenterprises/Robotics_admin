@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Search, Eye, Trash2, Mail, Phone } from "lucide-react";
 import Swal from "sweetalert2";
 import axios from "axios";
-import Modal from "../UI/Modal";
-import Button from "../UI/Button";
+import Modal from "../../UI/Modal";
+import Button from "../../UI/Button";
 
-export default function ContactUsList() {
+
+export default function Buy_Quote() {
   const [contacts, setContacts] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewingContact, setViewingContact] = useState<any | null>(null);
@@ -16,7 +17,7 @@ export default function ContactUsList() {
   // Fetch contacts
   const fetchContacts = async () => {
     try {
-      const res = await axios.post(`${BASE_URL}/list/contactus`);
+      const res = await axios.post(`${BASE_URL}/list/quote`);
       if (res.data?.result) {
         setContacts(res.data.list || []);
       }
@@ -26,10 +27,10 @@ export default function ContactUsList() {
   };
 
   // Delete contact
-  const handleDelete = async (c_id: number) => {
+  const handleDelete = async (rn_id: number) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "This contact will be deleted permanently.",
+      text: "This Rent Quote will be deleted permanently.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -38,11 +39,11 @@ export default function ContactUsList() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await axios.post(`${BASE_URL}/delete/contactus`, {
-            c_id,
+          const res = await axios.post(`${BASE_URL}/delete/quote`, {
+            rn_id,
           });
           if (res.data?.result) {
-            Swal.fire("Deleted!", "Contact has been deleted.", "success");
+            Swal.fire("Deleted!", "Buy Quote has been deleted.", "success");
             fetchContacts();
           } else {
             Swal.fire("Error", res.data?.message || "Delete failed", "error");
@@ -65,22 +66,23 @@ export default function ContactUsList() {
   }, []);
 
   // Filtered contacts
-  const filteredContacts = contacts.filter((c) => {
-    const search = searchTerm.toLowerCase();
-    return (
-      c.c_first_name.toLowerCase().includes(search) ||
-      c.c_last_name.toLowerCase().includes(search) ||
-      c.c_email.toLowerCase().includes(search) ||
-      c.c_phone.toString().includes(search) ||
-      c.c_message.toLowerCase().includes(search)
-    );
-  });
+ // Filtered contacts
+const filteredContacts = contacts.filter((c) => {
+  const search = searchTerm.toLowerCase();
+  return (
+    (c.q_name?.toLowerCase() || "").includes(search) ||
+  
+    (c.q_email?.toLowerCase() || "").includes(search) ||
+    (c.q_mobile?.toString() || "").includes(search) 
+  );
+});
+
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Contact Us Messages</h1>
+        <h1 className="text-2xl font-bold">Buy Quote Messages</h1>
         <p className="text-gray-500">Total: {contacts.length}</p>
       </div>
 
@@ -113,9 +115,9 @@ export default function ContactUsList() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Phone
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Message
-                </th>
+                </th> */}
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
                   Actions
                 </th>
@@ -123,19 +125,19 @@ export default function ContactUsList() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredContacts.map((contact) => (
-                <tr key={contact.c_id} className="hover:bg-gray-50">
+                <tr key={contact.rn_id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 text-nowrap">
-                    {contact.c_first_name} {contact.c_last_name}
+                    {contact.q_name} {contact.c_last_name}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {contact.c_email}
+                    {contact.q_email}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {contact.c_phone}
+                    {contact.q_mobile}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 truncate max-w-xs">
-                    {contact.c_message}
-                  </td>
+                  {/* <td className="px-6 py-4 text-sm text-gray-500 truncate max-w-xs">
+                    {contact.rn_message}
+                  </td> */}
                   <td className="px-6 py-4 text-right text-sm font-medium flex justify-end space-x-2">
                     <button
                       onClick={() => handleView(contact)}
@@ -144,7 +146,7 @@ export default function ContactUsList() {
                       <Eye className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(contact.c_id)}
+                      onClick={() => handleDelete(contact.rn_id)}
                       className="text-red-600 hover:text-red-900"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -158,7 +160,7 @@ export default function ContactUsList() {
                     colSpan={5}
                     className="text-center py-6 text-gray-500 text-sm"
                   >
-                    No contacts found
+                    No Rent Quote found
                   </td>
                 </tr>
               )}
@@ -172,22 +174,38 @@ export default function ContactUsList() {
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          title="Contact Details"
+          title="Buy Quote Details"
           size="lg"
         >
           <div className="space-y-4">
             <p>
-              <strong>Name:</strong> {viewingContact.c_first_name}{" "}
+              <strong>Name:</strong> {viewingContact.q_name}{" "}
               {viewingContact.c_last_name}
             </p>
             <p>
-              <strong>Email:</strong> {viewingContact.c_email}
+              <strong>Email:</strong> {viewingContact.q_email}
             </p>
             <p>
-              <strong>Phone:</strong> {viewingContact.c_phone}
+              <strong>Phone:</strong> {viewingContact.q_mobile}
             </p>
+
+  <p>
+              <strong>Quantity:</strong> {viewingContact.rn_quantity}
+            </p>
+
+             <p>
+              <strong>Purpose:</strong> {viewingContact.rn_purpose}
+            </p>
+              <p>
+              <strong>Customization:</strong> {viewingContact.q_customization}
+            </p>
+
+             <p>
+              <strong>Customization Details:</strong> {viewingContact.q_customization_details}
+            </p>
+
             <p>
-              <strong>Message:</strong> {viewingContact.c_message}
+              <strong>Message:</strong> {viewingContact.rn_message}
             </p>
             <div className="flex justify-end">
               <Button onClick={() => setIsModalOpen(false)}>Close</Button>

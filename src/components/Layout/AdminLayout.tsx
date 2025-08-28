@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Menu, 
   X, 
@@ -15,6 +15,7 @@ import {
   Image,
   Clapperboard
 } from 'lucide-react';
+import Button from '../UI/Button';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -34,14 +35,20 @@ const navigation = [
     { name: 'Current Projects', path: '/CurrentProjects', icon: Bot },
 
   { name: 'Testimonials', path: '/testimonials', icon: MessageSquare },
-  { name: 'Partners', path: '/partners', icon: Users },
+  // { name: 'Partners', path: '/partners', icon: Users },
+  { name: 'Buy Quote', path: '/Buy_Robot', icon: FileText },
+
+  { name: 'Rent Quote', path: '/Rent_Robot', icon: FileText },
+
   { name: 'Leads', path: '/leads', icon: Mail },
-  { name: 'Settings', path: '/settings', icon: Settings },
+  // { name: 'Settings', path: '/settings', icon: Settings },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+
+ 
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,6 +119,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 }
 
 function SidebarContent({ locationPath, closeSidebar }: { locationPath: string; closeSidebar?: () => void }) {
+
+   const navigate = useNavigate();
+
+ const handleLogout = () => {
+    // Clear token / user info from localStorage or sessionStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("user_id");
+
+    // (Optional) clear everything
+    // localStorage.clear();
+
+    // Redirect to login page
+    navigate("/login");
+  };
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
       <div className="flex h-16 shrink-0 items-center">
@@ -149,10 +170,13 @@ function SidebarContent({ locationPath, closeSidebar }: { locationPath: string; 
           </li>
           
           <li className="mt-auto">
-            <button className="group -mx-2 flex w-full gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-red-600">
-              <LogOut className="h-6 w-6 shrink-0" />
-              Sign out
-            </button>
+           <Button
+      onClick={handleLogout}
+      className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+    >
+      <LogOut size={18} />
+      Logout
+    </Button>
           </li>
         </ul>
       </nav>

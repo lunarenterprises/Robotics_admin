@@ -171,15 +171,15 @@ rob_model: robot.p_model || "",
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name?.trim()) newErrors.name = "Name is required.";
-    if (!formData.short_description?.trim())
-      newErrors.short_description = "Short description is required.";
-    if (!formData.description?.trim())
-      newErrors.description = "Description is required.";
-    if (!formData.price || isNaN(formData.price))
-      newErrors.price = "Valid price is required.";
-    if (formData.discount_price && isNaN(formData.discount_price))
-      newErrors.discount_price = "Discount price must be a number.";
+    // if (!formData.name?.trim()) newErrors.name = "Name is required.";
+    // if (!formData.short_description?.trim())
+    //   newErrors.short_description = "Short description is required.";
+    // if (!formData.description?.trim())
+    //   newErrors.description = "Description is required.";
+    // if (!formData.price || isNaN(formData.price))
+    //   newErrors.price = "Valid price is required.";
+    // if (formData.discount_price && isNaN(formData.discount_price))
+    //   newErrors.discount_price = "Discount price must be a number.";
   
     if (imagePreviews.length === 0)
       newErrors.images = "At least one image is required.";
@@ -268,6 +268,9 @@ rob_model: robot.p_model || "",
       formDataToSend.append("brochure", data.brochureFile);
     }
 
+
+
+    
     // ✅ Send images: existing (id:binary) + new
     imagePreviews.forEach((img) => {
       if (img.isNew && img.file instanceof File) {
@@ -401,7 +404,7 @@ rob_model: robot.p_model || "",
             key={robot.p_id}
             className="bg-white rounded-lg shadow hover:shadow-md"
           >
-            <img
+            <img className=" w-full h-56"
               src={
                 robot.productimages?.[0]?.pi_image
                   ? `https://lunarsenterprises.com:7001${robot.productimages[0].pi_image}`
@@ -493,11 +496,11 @@ rob_model: robot.p_model || "",
             { key: "screen", label: "Screen" },
             { key: "camera", label: "Camera" },
             { key: "body_colour", label: "Body Colour" },
-            { key: "mb_ram", label: "MB Ram" },
+            { key: "mb_ram", label: "Memory" },
             { key: "stand_by_time", label: "Stand by time" },
             { key: "head_pitch_angle", label: "Head pitch angle" },
             { key: "system", label: "System" },
-            { key: "navigation_accuracy", label: "Navigation Accuracy" },
+            { key: "navigation_accuracy", label: "Navigation Accuracy and Position Accuracy " },
             { key: "weight", label: "Weight" },
             
 
@@ -509,7 +512,7 @@ rob_model: robot.p_model || "",
             { key: "max_speed", label: "Max Speed" },
             { key: "battery_type", label: "Battery Type" },
 
-            { key: "battery_life", label: "Battery Life" },
+            { key: "battery_life", label: "Battery Capacity" },
 
             { key: "charging_time", label: "Charging Time" },
             { key: "sensors", label: "Sensors (comma separated)" },

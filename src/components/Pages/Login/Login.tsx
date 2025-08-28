@@ -135,9 +135,9 @@ const Login: React.FC<LoginProps> = ({ onForgotPassword }) => {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-gray-500">
+          {/* <div className="mt-6 text-center text-sm text-gray-500">
             Demo credentials: admin@example.com / admin123
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

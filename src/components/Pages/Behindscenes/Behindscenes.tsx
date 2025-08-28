@@ -9,10 +9,10 @@ type Blog = {
   id: string;
   title: string;
   description: string;
-  bl_category_tags:string;
+  bl_category_tags: string;
   image: string;
   date?: string;
-   file_type?: string;  
+  file_type?: string;
   status?: string;
 };
 
@@ -31,27 +31,25 @@ export default function Behindscenes() {
   }, []);
 
   const fetchBlogs = async () => {
-
-
-    const payload ={
-      type:'behind_the_scenes'
-    }
+    const payload = { type: "behind_the_scenes" };
     try {
       const res = await axios.post(
-        "https://lunarsenterprises.com:7001/robotics/list/blog",payload
+        "https://lunarsenterprises.com:7001/robotics/list/blog",
+        payload
       );
       if (res.data?.result && Array.isArray(res.data.list)) {
-      const mapped: Blog[] = res.data.list.map((item: any) => ({
-  id: String(item.bl_id),
-  title: item.bl_title,
-  description: item.bl_description,
-  bl_category_tags: item.bl_category_tags,
-  image: item.bl_image ? `https://lunarsenterprises.com:7001${item.bl_image}` : "",
-  file_type: item.bl_file_type,   // <-- add this
-  date: item.bl_date,
-  status: item.bl_status,
-}));
-
+        const mapped: Blog[] = res.data.list.map((item: any) => ({
+          id: String(item.bl_id),
+          title: item.bl_title,
+          description: item.bl_description,
+          bl_category_tags: item.bl_category_tags,
+          image: item.bl_image
+            ? `https://lunarsenterprises.com:7001${item.bl_image}`
+            : "",
+          file_type: item.bl_file_type,
+          date: item.bl_date,
+          status: item.bl_status,
+        }));
         setBlogs(mapped);
       }
     } catch (err) {
@@ -60,9 +58,7 @@ export default function Behindscenes() {
   };
 
   const filtered = blogs.filter((b) =>
-    `${b.title} `
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+    `${b.title}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAdd = () => {
@@ -70,8 +66,7 @@ export default function Behindscenes() {
     setFormData({
       title: "",
       description: "",
-      
-      bl_category_tags:""
+      bl_category_tags: "",
     });
     setFile(null);
     setPreview("");
@@ -114,6 +109,11 @@ export default function Behindscenes() {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
+
+      // detect file type
+      const type = selectedFile.type.startsWith("image") ? "image" : "video";
+      setFormData({ ...formData, file_type: type });
+
       const reader = new FileReader();
       reader.onloadend = () => setPreview(reader.result as string);
       reader.readAsDataURL(selectedFile);
@@ -121,18 +121,17 @@ export default function Behindscenes() {
   };
 
   const handleSave = async () => {
-    if (!formData.title ) return;
+    if (!formData.title) return;
 
     setLoading(true);
     const fd = new FormData();
     if (editing) fd.append("bl_id", editing.id);
 
-     fd.append("type" ,"behind_the_scenes" || "");
-
+    fd.append("type", "behind_the_scenes");
     fd.append("title", formData.title!);
     fd.append("description", formData.description || "");
     fd.append("category_tags", formData.bl_category_tags || "");
-
+    fd.append("file_type", formData.file_type || "");
 
     if (file) {
       fd.append("image", file);
@@ -166,7 +165,7 @@ export default function Behindscenes() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Behind scenes </h1>
+        <h1 className="text-2xl font-bold">Behind scenes</h1>
         <Button onClick={handleAdd}>
           <Plus className="h-4 w-4 mr-2" /> Add Behind Scenes
         </Button>
@@ -176,7 +175,7 @@ export default function Behindscenes() {
       <div>
         <input
           type="text"
-          placeholder="Search Case Study..."
+          placeholder="Search Behind Scenes..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border rounded px-3 py-2 w-full"
@@ -188,12 +187,9 @@ export default function Behindscenes() {
         <table className="min-w-full bg-white border rounded shadow">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-2 text-left">Image</th>
+              <th className="px-4 py-2 text-left">Media</th>
               <th className="px-4 py-2 text-left">Title</th>
               <th className="px-4 py-2 text-left">Category Tags</th>
-
-
-              
               <th className="px-4 py-2 text-left">Description</th>
               <th className="px-4 py-2 text-right">Actions</th>
             </tr>
@@ -201,30 +197,31 @@ export default function Behindscenes() {
           <tbody>
             {filtered.map((b) => (
               <tr key={b.id} className="border-t">
-          <td className="px-4 py-2">
-  {b.file_type === "image" ? (
-    <img
-      src={b.image}
-      alt={b.title}
-      className="h-12 w-12 object-cover rounded border"
-    />
-  ) : b.file_type === "mp4" || b.file_type === "video" ? (
-    <video
-      src={b.image}
-      className="h-12 w-12 object-cover rounded border"
-      controls
-    />
-  ) : (
-    <div className="h-12 w-12 bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-      N/A
-    </div>
-  )}
-</td>
+                <td className="px-4 py-2">
+                  {b.file_type === "image" ? (
+                    <img
+                      src={b.image}
+                      alt={b.title}
+                      className="h-12 w-12 object-cover rounded border"
+                    />
+                  ) : b.file_type === "video" ? (
+                    <video
+                      src={b.image}
+                      className="h-12 w-12 object-cover rounded border"
+                      controls
+                    />
+                  ) : (
+                    <div className="h-12 w-12 bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                      N/A
+                    </div>
+                  )}
+                </td>
 
                 <td className="px-4 py-2">{b.title}</td>
                 <td className="px-4 py-2">{b.bl_category_tags}</td>
-
-                <td className="px-4 py-2 max-w-xs truncate">{b.description}</td>
+                <td className="px-4 py-2 max-w-xs truncate">
+                  {b.description}
+                </td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <button
                     onClick={() => handleEdit(b)}
@@ -262,15 +259,16 @@ export default function Behindscenes() {
             className="w-full border rounded px-3 py-2"
           />
 
-               <input
+          <input
             type="text"
-            placeholder="Category Tags (Seperation with comma)"
+            placeholder="Category Tags (Separation with comma)"
             value={formData.bl_category_tags || ""}
             onChange={(e) =>
               setFormData({ ...formData, bl_category_tags: e.target.value })
             }
             className="w-full border rounded px-3 py-2"
           />
+
           <textarea
             placeholder="Description"
             value={formData.description || ""}
@@ -279,34 +277,26 @@ export default function Behindscenes() {
             }
             className="w-full border rounded px-3 py-2"
           />
-          {/* <input
-            type="text"
-            placeholder="Client Name"
-            value={formData.client_name || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, client_name: e.target.value })
-            }
-            className="w-full border rounded px-3 py-2"
-          /> */}
-          {/* <input
-            type="text"
-            placeholder="Client Location"
-            value={formData.client_location || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, client_location: e.target.value })
-            }
-            className="w-full border rounded px-3 py-2"
-          /> */}
+
           <input
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             onChange={handleImageChange}
             className="w-full"
           />
-          {preview && (
+
+          {preview && formData.file_type === "image" && (
             <img
               src={preview}
               alt="Preview"
+              className="h-32 w-full object-cover rounded"
+            />
+          )}
+
+          {preview && formData.file_type === "video" && (
+            <video
+              src={preview}
+              controls
               className="h-32 w-full object-cover rounded"
             />
           )}

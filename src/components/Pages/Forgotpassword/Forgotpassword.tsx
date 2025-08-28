@@ -151,9 +151,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
         </button>
       </form>
 
-      <div className="mt-6 text-center text-sm text-gray-500">
+      {/* <div className="mt-6 text-center text-sm text-gray-500">
         Demo: Use admin@example.com to receive OTP
-      </div>
+      </div> */}
     </div>
   );
 
@@ -173,7 +173,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
         </div>
         <h1 className="text-3xl font-bold text-gray-900">Verify OTP</h1>
         <p className="text-gray-600 mt-2">
-          We've sent a 6-digit code to <span className="font-semibold">{resetEmail}</span>
+          We've sent a code to <span className="font-semibold">{resetEmail}</span>
         </p>
       </div>
 
@@ -206,7 +206,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
 
         <button
           type="submit"
-          disabled={loading || otp.length !== 6}
+          disabled={loading || otp.length !== 4}
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           {loading ? 'Verifying...' : 'Verify OTP'}
@@ -226,9 +226,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
         </button>
       </div>
 
-      <div className="mt-4 text-center text-sm text-gray-500">
+      {/* <div className="mt-4 text-center text-sm text-gray-500">
         Demo OTP: 123456
-      </div>
+      </div> */}
     </div>
   );
 

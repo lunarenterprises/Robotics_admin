@@ -16,51 +16,55 @@ export default function Banners() {
   const [submitting, setSubmitting] = useState(false);
 
   // Fetch banners list
-// Update Banner type
-type Banner = {
-  id: string;
-  image?: string;
-  video?: string;
-  text:string;
-};
+  // Update Banner type
+  type Banner = {
+    id: string;
+    image?: string;
+    video?: string;
+    text: string;
+
+  };
 
   const bannerTypes = [
     { value: "home", label: "Home Page Banner" },
     { value: "ProductandServiceBanner", label: "Product and Service Banner" },
-   
+
   ];
 
-// Fetch banners list
-const fetchBanners = async () => {
-  setLoading(true);
-  try {
-    const res = await axios.post(
-      "https://lunarsenterprises.com:7001/robotics/list/banner"
-    );
+  // Fetch banners list
+  const fetchBanners = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        "https://lunarsenterprises.com:7001/robotics/list/banner"
+      );
 
-    if (res.data?.result && Array.isArray(res.data.list)) {
-      const mapped = res.data.list.map((item: any) => ({
-        id: String(item.b_id),
-        image:
-          item.b_type === "image"
-            ? `https://lunarsenterprises.com:7001${item.b_file}`
-            : undefined,
-        video:
-          item.b_type === "video"
-            ? `https://lunarsenterprises.com:7001${item.b_file}`
-            : undefined,
-      }));
-      setBanners(mapped);
-    } else {
-      setBanners([]);
+      if (res.data?.result && Array.isArray(res.data.list)) {
+        const mapped = res.data.list.map((item: any) => ({
+          id: String(item.b_id),
+          image:
+            item.b_type === "image"
+              ? `https://lunarsenterprises.com:7001${item.b_file}`
+              : undefined,
+          video:
+            item.b_type === "video"
+              ? `https://lunarsenterprises.com:7001${item.b_file}`
+              : undefined,
+
+             title: item.b_title || "",        // ✅ correct field
+        subTitle: item.b_sub_title || ""
+        }));
+        setBanners(mapped);
+      } else {
+        setBanners([]);
+      }
+    } catch (err) {
+      console.error("Error fetching banners:", err);
+      Swal.fire("Error", "Failed to load banners", "error");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error fetching banners:", err);
-    Swal.fire("Error", "Failed to load banners", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   useEffect(() => {
@@ -77,7 +81,10 @@ const fetchBanners = async () => {
     const payload = new FormData();
     if (formData.image) payload.append("image", formData.image);
     if (formData.video) payload.append("video", formData.video);
-  payload.append("page_name", formData.type);
+    payload.append("page_name", formData.type);
+    if (formData.text) payload.append("title", formData.text);
+    if (formData.subtext) payload.append("sub_title", formData.subtext);
+
     setSubmitting(true);
     try {
       await axios.post(
@@ -163,6 +170,12 @@ const fetchBanners = async () => {
                 />
               )}
 
+         <div className="mt-5">
+  <p className="font-semibold">{banner.title}</p>
+  <p className="text-gray-500">{banner.subTitle}</p>
+</div>
+
+
               <button
                 onClick={() => handleDelete(banner.id)}
                 className="absolute top-5 right-5 p-1 bg-white rounded-full shadow hover:bg-red-100"
@@ -183,7 +196,7 @@ const fetchBanners = async () => {
       >
         <div className="space-y-4">
 
-             <div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Banner Type
             </label>
@@ -202,6 +215,40 @@ const fetchBanners = async () => {
               ))}
             </select>
           </div>
+
+
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Banner Text
+            </label>
+            <input
+              type="text"
+              placeholder="Enter banner text"
+              value={formData.text || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, text: e.target.value })
+              }
+              className="w-full border border-gray-300 rounded-md p-2"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Banner sub Text
+            </label>
+            <input
+              type="text"
+              placeholder="Enter sub banner text"
+              value={formData.subtext || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, subtext: e.target.value })
+              }
+              className="w-full border border-gray-300 rounded-md p-2"
+            />
+          </div>
+
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Image

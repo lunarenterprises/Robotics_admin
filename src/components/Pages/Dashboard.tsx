@@ -1,12 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bot, FileText, Users, Mail, TrendingUp, Calendar } from 'lucide-react';
+import axios from 'axios';
 
-const stats = [
-  { name: 'Total Robots', value: '24', change: '+12%', changeType: 'increase', icon: Bot },
-  { name: 'Blog Posts', value: '128', change: '+5%', changeType: 'increase', icon: FileText },
-  { name: 'Active Leads', value: '43', change: '+18%', changeType: 'increase', icon: Mail },
-  { name: 'Partners', value: '12', change: '+2', changeType: 'increase', icon: Users },
-];
+
 
 const recentActivity = [
   {
@@ -44,6 +40,43 @@ const recentActivity = [
 ];
 
 export default function Dashboard() {
+
+
+    const [totalRobots, setTotalRobots] = useState(0);
+  const [contacts, setContacts] = useState<number>(0);
+    const stats = [
+  { name: 'Total Robots', value: totalRobots, change: '', changeType: 'increase', icon: Bot },
+  // { name: 'Blog Posts', value: '128', change: '+5%', changeType: 'increase', icon: FileText },
+  { name: 'Leads', value: contacts, change: '', changeType: 'increase', icon: Mail },
+  // { name: 'Partners', value: '12', change: '+2', changeType: 'increase', icon: Users },
+];
+
+
+  useEffect(() => {
+    fetchRobots();
+    fetchContacts();
+  }, []);
+
+  const fetchRobots = async () => {
+    try {
+      const { data } = await axios.post("https://lunarsenterprises.com:7001/robotics/list/product");
+      const robotsArray = Array.isArray(data.list) ? data.list : [];
+      setTotalRobots(robotsArray.length);
+    } catch (error) {
+      console.error("Error fetching robots:", error);
+    }
+  };
+
+  const fetchContacts = async () => {
+    try {
+      const { data } = await axios.post("https://lunarsenterprises.com:7001/robotics/list/contactus");
+      const contactsArray = Array.isArray(data.list) ? data.list : [];
+      setContacts(contactsArray.length);
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Welcome Section */}

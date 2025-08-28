@@ -22,6 +22,8 @@ import ForgotPassword from "./components/Pages/Forgotpassword/Forgotpassword";
 import Casestudy from "./components/Pages/Casestudy/Casestudy";
 import Behindscenes from "./components/Pages/Behindscenes/Behindscenes";
 import CurrentProjects from "./components/Pages/Current_project/Current_project";
+import Rent_Robot from "./components/Pages/Rent_Robot/Rent_Robot";
+import Buy_Quote from "./components/Pages/Buy_Quote/Buy_Quote";
 
 // Protected Route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -63,6 +65,10 @@ function App() {
                     <Route path="/Casestudy" element={<Casestudy />} />
                     <Route path="/Behindscenes" element={<Behindscenes />} />
                         <Route path="/CurrentProjects" element={<CurrentProjects />} />
+                        <Route path="/Rent_Robot" element={<Rent_Robot />} />
+                        <Route path="/Buy_Robot" element={<Buy_Quote />} />
+
+
 
 
                     <Route
