@@ -102,6 +102,10 @@ rob_model: robot.p_model || "",
       stand_by_time: robot.p_stand_by_time || "",
       head_pitch_angle: robot.p_head_pitch_angle || "",
       system: robot.p_system || "",
+            manufacturer: robot.p_manufacturer || "",
+
+
+
       navigation_accuracy: robot.p_navigation_accuracy || "",
       weight: robot.p_weight || "",
       battery_type: robot.p_battery_type || "",
@@ -228,6 +232,9 @@ rob_model: robot.p_model || "",
     formDataToSend.append("system", data.system || "");
     formDataToSend.append("weight", data.weight || "");
     formDataToSend.append("camera", data.camera || "");
+
+    formDataToSend.append("manufacturer", data.manufacturer || "");
+
 
     formDataToSend.append("navigation_accuracy", data.navigation_accuracy || "");
 
@@ -484,6 +491,8 @@ rob_model: robot.p_model || "",
           {[
             { key: "name", label: "Name" },
             { key: "rob_model", label: "Robot Model" },
+            { key: "manufacturer", label: "Manufacturer" },
+
             { key: "short_description", label: "Short Description" },
             { key: "description", label: "Description" },
             { key: "price", label: "Price" },
