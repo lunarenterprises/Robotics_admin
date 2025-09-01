@@ -5,15 +5,21 @@ import Button from "../../UI/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
 
+type BlogContent = {
+  bc_id?: number; // existing content
+  heading: string;
+  content: string;
+};
+
 type Blog = {
   id: string;
   title: string;
   description: string;
-  client_name: string;
-  client_location: string;
   image: string;
   date?: string;
   status?: string;
+  blog_contents?: BlogContent[];
+  category_tags?: string;
 };
 
 export default function BlogPost() {
@@ -21,7 +27,10 @@ export default function BlogPost() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Blog | null>(null);
-  const [formData, setFormData] = useState<Partial<Blog>>({});
+  const [formData, setFormData] = useState<Partial<Blog>>({
+    blog_contents: [{ heading: "", content: "" }],
+    category_tags: "",
+  });
   const [preview, setPreview] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,28 +40,30 @@ export default function BlogPost() {
   }, []);
 
   const fetchBlogs = async () => {
-
-
-    const payload ={
-      type:'blog'
-    }
+    const payload = { type: "blog" };
     try {
       const res = await axios.post(
-        "https://lunarsenterprises.com:7001/robotics/list/blog",payload
+        "https://lunarsenterprises.com:7001/robotics/list/blog",
+        payload
       );
       if (res.data?.result && Array.isArray(res.data.list)) {
         const mapped: Blog[] = res.data.list.map((item: any) => ({
           id: String(item.bl_id),
           title: item.bl_title,
           description: item.bl_description,
-          client_name: item.bl_client_name,
-          client_location: item.bl_client_location,
-       image: item.bl_image
-  ? `https://lunarsenterprises.com:7001${item.bl_image}`
-  : "",
-
+          image: item.bl_image
+            ? `https://lunarsenterprises.com:7001${item.bl_image}`
+            : "",
           date: item.bl_date,
           status: item.bl_status,
+          category_tags: item.bl_category_tags || "",
+          blog_contents: Array.isArray(item.blog_content)
+            ? item.blog_content.map((bc: any) => ({
+                bc_id: bc.bc_id,
+                heading: bc.bc_heading,
+                content: bc.bc_content,
+              }))
+            : [],
         }));
         setBlogs(mapped);
       }
@@ -62,9 +73,7 @@ export default function BlogPost() {
   };
 
   const filtered = blogs.filter((b) =>
-    `${b.title} ${b.client_name} ${b.client_location}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+    `${b.title} `.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAdd = () => {
@@ -72,8 +81,8 @@ export default function BlogPost() {
     setFormData({
       title: "",
       description: "",
-      client_name: "",
-      client_location: "",
+      blog_contents: [{ heading: "", content: "" }],
+      category_tags: "",
     });
     setFile(null);
     setPreview("");
@@ -82,13 +91,17 @@ export default function BlogPost() {
 
   const handleEdit = (b: Blog) => {
     setEditing(b);
-    setFormData(b);
+    setFormData({
+      ...b,
+      blog_contents: b.blog_contents || [{ heading: "", content: "" }],
+      category_tags: b.category_tags || "",
+    });
     setPreview(b.image || "");
     setFile(null);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDeleteBlog = (id: string) => {
     Swal.fire({
       title: "Are you sure?",
       text: "This blog will be deleted permanently.",
@@ -112,6 +125,40 @@ export default function BlogPost() {
     });
   };
 
+  const handleDeleteContent = async (idx: number, bc_id?: number) => {
+    if (bc_id) {
+      // Existing content, call API
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This section will be deleted permanently.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.post(
+              "https://lunarsenterprises.com:7001/robotics/delete/blog-content",
+              { bc_id }
+            );
+            const updated = [...(formData.blog_contents || [])];
+            updated.splice(idx, 1);
+            setFormData({ ...formData, blog_contents: updated });
+            Swal.fire("Deleted!", "Section deleted successfully.", "success");
+          } catch (err) {
+            console.error(err);
+            Swal.fire("Error!", "Failed to delete section.", "error");
+          }
+        }
+      });
+    } else {
+      // New section, remove locally
+      const updated = [...(formData.blog_contents || [])];
+      updated.splice(idx, 1);
+      setFormData({ ...formData, blog_contents: updated });
+    }
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -123,18 +170,19 @@ export default function BlogPost() {
   };
 
   const handleSave = async () => {
-    if (!formData.title || !formData.client_name) return;
+    if (!formData.title) return;
 
     setLoading(true);
     const fd = new FormData();
     if (editing) fd.append("bl_id", editing.id);
 
-     fd.append("type" ,"blog" || "");
-
+    fd.append("type", "blog");
     fd.append("title", formData.title!);
     fd.append("description", formData.description || "");
-    fd.append("client_name", formData.client_name!);
-    fd.append("client_location", formData.client_location || "");
+    fd.append("category_tags", formData.category_tags || "");
+
+    fd.append("blog_contents", JSON.stringify(formData.blog_contents || []));
+
     if (file) {
       fd.append("image", file);
     }
@@ -191,9 +239,7 @@ export default function BlogPost() {
             <tr>
               <th className="px-4 py-2 text-left">Image</th>
               <th className="px-4 py-2 text-left">Title</th>
-              <th className="px-4 py-2 text-left">Client Name</th>
-              <th className="px-4 py-2 text-left">Client Location</th>
-              <th className="px-4 py-2 text-left">Description</th>
+              <th className="px-4 py-2 text-left">Category Tags</th>
               <th className="px-4 py-2 text-right">Actions</th>
             </tr>
           </thead>
@@ -214,9 +260,7 @@ export default function BlogPost() {
                   )}
                 </td>
                 <td className="px-4 py-2">{b.title}</td>
-                <td className="px-4 py-2">{b.client_name}</td>
-                <td className="px-4 py-2">{b.client_location}</td>
-                <td className="px-4 py-2 max-w-xs truncate">{b.description}</td>
+                <td className="px-4 py-2">{b.category_tags}</td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <button
                     onClick={() => handleEdit(b)}
@@ -225,7 +269,7 @@ export default function BlogPost() {
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(b.id)}
+                    onClick={() => handleDeleteBlog(b.id)}
                     className="p-1 text-gray-500 hover:text-red-600"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -263,22 +307,71 @@ export default function BlogPost() {
           />
           <input
             type="text"
-            placeholder="Client Name"
-            value={formData.client_name || ""}
+            placeholder="Category Tags"
+            value={formData.category_tags || ""}
             onChange={(e) =>
-              setFormData({ ...formData, client_name: e.target.value })
+              setFormData({ ...formData, category_tags: e.target.value })
             }
             className="w-full border rounded px-3 py-2"
           />
-          <input
-            type="text"
-            placeholder="Client Location"
-            value={formData.client_location || ""}
-            onChange={(e) =>
-              setFormData({ ...formData, client_location: e.target.value })
-            }
-            className="w-full border rounded px-3 py-2"
-          />
+
+          {/* Blog Contents */}
+          <div className="space-y-3">
+            <h3 className="font-semibold">Blog Contents</h3>
+            {formData.blog_contents?.map((c, idx) => (
+              <div
+                key={idx}
+                className="border p-3 rounded space-y-2 flex flex-col"
+              >
+                <div className="flex justify-between items-center">
+                  <span>Section {idx + 1}</span>
+                  {/* <button
+                    type="button"
+                    onClick={() => handleDeleteContent(idx, c.bc_id)}
+                    className="text-red-500 font-bold"
+                  >
+                    Delete
+                  </button> */}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Heading"
+                  value={c.heading}
+                  onChange={(e) => {
+                    const updated = [...(formData.blog_contents || [])];
+                    updated[idx].heading = e.target.value;
+                    setFormData({ ...formData, blog_contents: updated });
+                  }}
+                  className="w-full border rounded px-3 py-2"
+                />
+                <textarea
+                  placeholder="Content"
+                  value={c.content}
+                  onChange={(e) => {
+                    const updated = [...(formData.blog_contents || [])];
+                    updated[idx].content = e.target.value;
+                    setFormData({ ...formData, blog_contents: updated });
+                  }}
+                  className="w-full border rounded px-3 py-2"
+                />
+              </div>
+            ))}
+            <Button
+              onClick={() =>
+                setFormData({
+                  ...formData,
+                  blog_contents: [
+                    ...(formData.blog_contents || []),
+                    { heading: "", content: "" },
+                  ],
+                })
+              }
+            >
+              + Add Section
+            </Button>
+          </div>
+
+          {/* Image Upload */}
           <input
             type="file"
             accept="image/*"

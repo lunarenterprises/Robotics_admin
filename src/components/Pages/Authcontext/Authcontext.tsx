@@ -15,16 +15,21 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [resetEmail, setResetEmail] = useState<string>("");
   const [otpSent, setOtpSent] = useState<boolean>(false);
+
+  const [loading, setLoading] = useState(true); // ✅ new
 
   useEffect(() => {
     const storedUser = localStorage.getItem("adminUser");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    setLoading(false); // ✅ finish loading
   }, []);
 
   // 🔹 LOGIN
@@ -73,7 +78,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // 🔹 VERIFY OTP
   const verifyOTP = async (otp: string): Promise<boolean> => {
     try {
-      const res = await axios.post(`${API_BASE}/verify-otp`, { email: resetEmail, otp });
+      const res = await axios.post(`${API_BASE}/verify-otp`, {
+        email: resetEmail,
+        otp,
+      });
       return res.data.result;
     } catch (err) {
       console.error("OTP Verification failed:", err);
@@ -82,7 +90,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // 🔹 RESET PASSWORD
-  const resetPassword = async (newPassword: string, confirmPassword: string): Promise<boolean> => {
+  const resetPassword = async (
+    newPassword: string,
+    confirmPassword: string
+  ): Promise<boolean> => {
     if (newPassword !== confirmPassword) return false;
     try {
       const res = await axios.post(`${API_BASE}/change/password`, {
@@ -102,7 +113,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // 🔹 CHANGE PASSWORD (when logged in)
-  const changePassword = async (oldPassword: string, newPassword: string): Promise<boolean> => {
+  const changePassword = async (
+    oldPassword: string,
+    newPassword: string
+  ): Promise<boolean> => {
     try {
       const res = await axios.post(`${API_BASE}/change/password`, {
         email: user?.email,
@@ -130,7 +144,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         otpSent,
       }}
     >
-      {children}
+      {/* {children} */}
+      {loading ? <div>Loading...</div> : children}
     </AuthContext.Provider>
   );
 };

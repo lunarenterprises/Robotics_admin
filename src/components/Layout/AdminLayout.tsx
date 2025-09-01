@@ -1,54 +1,51 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Menu, 
-  X, 
-  Home, 
-  Bot, 
-  FileText, 
-  Beaker, 
-  MessageSquare, 
-  Users, 
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Menu,
+  X,
+  Home,
+  Bot,
+  FileText,
+  Beaker,
+  MessageSquare,
+  Users,
   Mail,
   Settings,
   LogOut,
   Image,
-  Clapperboard
-} from 'lucide-react';
-import Button from '../UI/Button';
+  Clapperboard,
+} from "lucide-react";
+import Button from "../UI/Button";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 const navigation = [
-  { name: 'Dashboard', path: '/dashboard', icon: Home },
-  { name: 'Robots', path: '/robots', icon: Bot },
-  { name: 'Banner', path: '/banners', icon: Image },
+  { name: "Dashboard", path: "/dashboard", icon: Home },
+  { name: "Robots", path: "/robots", icon: Bot },
+  { name: "Banner", path: "/banners", icon: Image },
 
-  { name: 'Blog Posts', path: '/blog', icon: FileText },
-  { name: 'Research', path: '/research', icon: Beaker },
-  { name: 'Case Study', path: '/Casestudy',   icon: FileText, },
-  { name: 'Behind Scenes', path: '/Behindscenes', icon:  Clapperboard, },
+  { name: "Blog Posts", path: "/blog", icon: FileText },
+  { name: "Research", path: "/research", icon: Beaker },
+  { name: "Case Study", path: "/Casestudy", icon: FileText },
+  { name: "Behind Scenes", path: "/Behindscenes", icon: Clapperboard },
 
+  { name: "Current Projects", path: "/CurrentProjects", icon: Bot },
 
-    { name: 'Current Projects', path: '/CurrentProjects', icon: Bot },
-
-  { name: 'Testimonials', path: '/testimonials', icon: MessageSquare },
+  { name: "Testimonials", path: "/testimonials", icon: MessageSquare },
   // { name: 'Partners', path: '/partners', icon: Users },
-  { name: 'Buy Quote', path: '/Buy_Robot', icon: FileText },
+  { name: "Buy Quote", path: "/Buy_Robot", icon: FileText },
 
-  { name: 'Rent Quote', path: '/Rent_Robot', icon: FileText },
+  { name: "Rent Quote", path: "/Rent_Robot", icon: FileText },
 
-  { name: 'Leads', path: '/leads', icon: Mail },
+  { name: "Leads", path: "/leads", icon: Mail },
   // { name: 'Settings', path: '/settings', icon: Settings },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
-
- 
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -69,7 +66,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <X className="h-6 w-6 text-white" />
               </button>
             </div>
-            <SidebarContent locationPath={location.pathname} closeSidebar={() => setSidebarOpen(false)} />
+            <SidebarContent
+              locationPath={location.pathname}
+              closeSidebar={() => setSidebarOpen(false)}
+            />
           </div>
         </div>
       )}
@@ -89,14 +89,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           >
             <Menu className="h-6 w-6" />
           </button>
-          
+
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1 items-center">
               <h1 className="text-xl font-semibold text-gray-900 capitalize">
-                {navigation.find(nav => nav.path === location.pathname)?.name || 'Dashboard'}
+                {navigation.find((nav) => nav.path === location.pathname)
+                  ?.name || "Dashboard"}
               </h1>
             </div>
-            
+
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               <div className="flex items-center gap-x-4">
                 <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
@@ -118,17 +119,22 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   );
 }
 
-function SidebarContent({ locationPath, closeSidebar }: { locationPath: string; closeSidebar?: () => void }) {
+function SidebarContent({
+  locationPath,
+  closeSidebar,
+}: {
+  locationPath: string;
+  closeSidebar?: () => void;
+}) {
+  const navigate = useNavigate();
 
-   const navigate = useNavigate();
-
- const handleLogout = () => {
+  const handleLogout = () => {
     // Clear token / user info from localStorage or sessionStorage
-    localStorage.removeItem("token");
+    localStorage.removeItem("adminUser");
     localStorage.removeItem("user_id");
 
     // (Optional) clear everything
-    // localStorage.clear();
+    localStorage.clear();
 
     // Redirect to login page
     navigate("/login");
@@ -142,7 +148,7 @@ function SidebarContent({ locationPath, closeSidebar }: { locationPath: string; 
           <span className="ml-1 text-xl font-bold text-blue-500">Admin</span>
         </div>
       </div>
-      
+
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
@@ -156,8 +162,8 @@ function SidebarContent({ locationPath, closeSidebar }: { locationPath: string; 
                       onClick={closeSidebar}
                       className={`group flex w-full gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 ${
                         isActive
-                          ? 'bg-blue-50 text-blue-600'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                       }`}
                     >
                       <item.icon className="h-6 w-6 shrink-0" />
@@ -168,15 +174,15 @@ function SidebarContent({ locationPath, closeSidebar }: { locationPath: string; 
               })}
             </ul>
           </li>
-          
+
           <li className="mt-auto">
-           <Button
-      onClick={handleLogout}
-      className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-    >
-      <LogOut size={18} />
-      Logout
-    </Button>
+            <Button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            >
+              <LogOut size={18} />
+              Logout
+            </Button>
           </li>
         </ul>
       </nav>
