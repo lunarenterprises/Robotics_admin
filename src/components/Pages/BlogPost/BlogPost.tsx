@@ -138,7 +138,7 @@ export default function BlogPost() {
         if (result.isConfirmed) {
           try {
             await axios.post(
-              "https://lunarsenterprises.com:7001/robotics/delete/blog-content",
+              "https://lunarsenterprises.com:7001/robotics/delete/blog_content",
               { bc_id }
             );
             const updated = [...(formData.blog_contents || [])];
@@ -171,6 +171,14 @@ export default function BlogPost() {
 
   const handleSave = async () => {
     if (!formData.title) return;
+    if (!editing && !file) {
+      Swal.fire(
+        "Validation Error",
+        "Image is required for new blogs.",
+        "warning"
+      );
+      return;
+    }
 
     setLoading(true);
     const fd = new FormData();
@@ -325,13 +333,13 @@ export default function BlogPost() {
               >
                 <div className="flex justify-between items-center">
                   <span>Section {idx + 1}</span>
-                  {/* <button
+                  <button
                     type="button"
                     onClick={() => handleDeleteContent(idx, c.bc_id)}
                     className="text-red-500 font-bold"
                   >
                     Delete
-                  </button> */}
+                  </button>
                 </div>
                 <input
                   type="text"
