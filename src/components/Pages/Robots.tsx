@@ -26,7 +26,7 @@ export default function Robots() {
   const [imagePreviews, setImagePreviews] = useState([]); // {id, src, file, isNew}
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
- const [filterType, setFilterType] = useState("all");
+  const [filterType, setFilterType] = useState("all");
   useEffect(() => {
     fetchRobots();
   }, []);
@@ -80,7 +80,7 @@ export default function Robots() {
     setEditingRobot(robot);
     setFormData({
       name: robot.p_name || "",
-     short_description: robot.p_short_descrption || "",
+      short_description: robot.p_short_descrption || "",
       description: robot.p_descrption || "",
       price: robot.p_price || "",
       discount_price: robot.p_discount_price || "",
@@ -94,7 +94,7 @@ export default function Robots() {
       sensors: robot.p_sensors || "",
       connectivity: robot.p_connectivity || "",
       material: robot.p_material || "",
-rob_model: robot.p_model || "",
+      rob_model: robot.p_model || "",
       screen: robot.p_screen || "",
       camera: robot.p_camera || "",
       body_colour: robot.p_body_colour || "",
@@ -102,15 +102,13 @@ rob_model: robot.p_model || "",
       stand_by_time: robot.p_stand_by_time || "",
       head_pitch_angle: robot.p_head_pitch_angle || "",
       system: robot.p_system || "",
-            manufacturer: robot.p_manufacturer || "",
-
-
+      manufacturer: robot.p_manufacturer || "",
 
       navigation_accuracy: robot.p_navigation_accuracy || "",
       weight: robot.p_weight || "",
       battery_type: robot.p_battery_type || "",
-        brochure: robot.p_brochure || null,
-         buy_rent: robot.p_buy_rent || "buy",   // <-- added
+      brochure: robot.p_brochure || null,
+      buy_rent: robot.p_buy_rent || "buy", // <-- added
       images: [],
     });
 
@@ -184,7 +182,7 @@ rob_model: robot.p_model || "",
     //   newErrors.price = "Valid price is required.";
     // if (formData.discount_price && isNaN(formData.discount_price))
     //   newErrors.discount_price = "Discount price must be a number.";
-  
+
     if (imagePreviews.length === 0)
       newErrors.images = "At least one image is required.";
     setErrors(newErrors);
@@ -208,19 +206,23 @@ rob_model: robot.p_model || "",
     formDataToSend.append("discount", data.discount || "");
     formDataToSend.append(
       "highlights",
-      (data.highlights || "").split(",").map((s) => s.trim()).join(",")
+      (data.highlights || "")
+        .split(",")
+        .map((s) => s.trim())
+        .join(",")
     );
     formDataToSend.append(
       "product_used_places",
-      (data.product_used_places || "").split(",").map((s) => s.trim()).join(",")
+      (data.product_used_places || "")
+        .split(",")
+        .map((s) => s.trim())
+        .join(",")
     );
     formDataToSend.append("dimensions", data.dimensions || "");
     formDataToSend.append("max_speed", data.max_speed || "");
     formDataToSend.append("battery_life", data.battery_life || "");
     formDataToSend.append("charging_time", data.charging_time || "");
     formDataToSend.append("buy_rent", data.buy_rent || "buy");
-
-
 
     formDataToSend.append("rob_model", data.rob_model || "");
 
@@ -235,49 +237,28 @@ rob_model: robot.p_model || "",
 
     formDataToSend.append("manufacturer", data.manufacturer || "");
 
-
-    formDataToSend.append("navigation_accuracy", data.navigation_accuracy || "");
-
-
-
-    
-
-    
+    formDataToSend.append(
+      "navigation_accuracy",
+      data.navigation_accuracy || ""
+    );
 
     formDataToSend.append("battery_type", data.battery_type || "");
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     formDataToSend.append(
       "sensors",
-      (data.sensors || "").split(",").map((s) => s.trim()).join(",")
+      (data.sensors || "")
+        .split(",")
+        .map((s) => s.trim())
+        .join(",")
     );
     formDataToSend.append("connectivity", data.connectivity || "");
     formDataToSend.append("material", data.material || "");
 
-      // 📄 brochure upload
+    // 📄 brochure upload
     if (data.brochureFile instanceof File) {
       formDataToSend.append("brochure", data.brochureFile);
     }
 
-
-
-    
     // ✅ Send images: existing (id:binary) + new
     imagePreviews.forEach((img) => {
       if (img.isNew && img.file instanceof File) {
@@ -287,28 +268,21 @@ rob_model: robot.p_model || "",
       }
     });
 
-
-
-
-
     return formDataToSend;
   };
 
-
   // name,
-  // rob_model, 
+  // rob_model,
 
   // short_description,
-  //  description, 
-  // price, 
+  //  description,
+  // price,
   // discount_price,
   //  discount,
   //   highlights,
 
-
   //    product_used_places,
   //    dimensions,
-
 
   //  screen,
 
@@ -325,16 +299,14 @@ rob_model: robot.p_model || "",
 
   //  navigation_accuracy,
 
-
-  //  weight, 
-
+  //  weight,
 
   //  max_speed,
-  //  battery_type, 
-  //  battery_life, 
-  //  charging_time, 
+  //  battery_type,
+  //  battery_life,
+  //  charging_time,
   //  sensors,
-  //   connectivity, 
+  //   connectivity,
   //   material
 
   const handleSave = async () => {
@@ -380,7 +352,7 @@ rob_model: robot.p_model || "",
       </div>
 
       {/* Search */}
-    {/* Search + Filter */}
+      {/* Search + Filter */}
       <div className="bg-white p-4 rounded-lg shadow space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
@@ -415,7 +387,8 @@ rob_model: robot.p_model || "",
             key={robot.p_id}
             className="bg-white rounded-lg shadow hover:shadow-md"
           >
-            <img className=" w-full h-56"
+            <img
+              className=" w-full h-56"
               src={
                 robot.productimages?.[0]?.pi_image
                   ? `https://lunarsenterprises.com:7001${robot.productimages[0].pi_image}`
@@ -440,7 +413,7 @@ rob_model: robot.p_model || "",
                 </p>
               )}
 
-                 {robot.p_brochure && (
+              {robot.p_brochure && (
                 <a
                   href={`https://lunarsenterprises.com:7001${robot.p_brochure}`}
                   target="_blank"
@@ -465,10 +438,6 @@ rob_model: robot.p_model || "",
                 </button>
               </div>
             </div>
-
-            
-
-            
           </div>
         ))}
       </div>
@@ -488,7 +457,7 @@ rob_model: robot.p_model || "",
         size="lg"
       >
         <div className="space-y-4">
-          {[
+          {/* {[
             { key: "name", label: "Name" },
             { key: "rob_model", label: "Robot Model" },
             { key: "manufacturer", label: "Manufacturer" },
@@ -500,11 +469,11 @@ rob_model: robot.p_model || "",
             { key: "discount", label: "Discount" },
             { key: "highlights", label: "Highlights (comma separated)" },
 
-
-            { key: "product_used_places", label: "Used Places (comma separated)" },
+            {
+              key: "product_used_places",
+              label: "Used Places (comma separated)",
+            },
             { key: "dimensions", label: "Dimensions" },
-
-
 
             { key: "screen", label: "Screen" },
             { key: "camera", label: "Camera" },
@@ -513,20 +482,16 @@ rob_model: robot.p_model || "",
             { key: "stand_by_time", label: "Stand by time" },
             { key: "head_pitch_angle", label: "Head pitch angle" },
             { key: "system", label: "System" },
-            { key: "navigation_accuracy", label: "Navigation Accuracy and Position Accuracy " },
+            {
+              key: "navigation_accuracy",
+              label: "Navigation Accuracy and Position Accuracy ",
+            },
             { key: "weight", label: "Weight" },
-            
-
-
-
-
-
 
             { key: "max_speed", label: "Max Speed" },
             { key: "battery_type", label: "Battery Type" },
 
             { key: "battery_life", label: "Battery Capacity" },
-
             { key: "charging_time", label: "Charging Time" },
             { key: "sensors", label: "Sensors (comma separated)" },
             { key: "connectivity", label: "Connectivity" },
@@ -552,25 +517,123 @@ rob_model: robot.p_model || "",
             </div>
           ))}
 
-{/* Buy / Rent */}
-<div>
-  <label className="block text-sm font-medium mb-1">Buy / Rent</label>
-  <select
-    value={formData.buy_rent || "buy"}
-    onChange={(e) =>
-      setFormData({ ...formData, buy_rent: e.target.value })
-    }
-    className="w-full px-3 py-2 border rounded-md border-gray-300"
-  >
-    <option value="Buy">Buy</option>
-    <option value="Rent">Rent</option>
-  </select>
-</div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Buy / Rent</label>
+            <select
+              value={formData.buy_rent || "buy"}
+              onChange={(e) =>
+                setFormData({ ...formData, buy_rent: e.target.value })
+              }
+              className="w-full px-3 py-2 border rounded-md border-gray-300"
+            >
+              <option value="Buy">Buy</option>
+              <option value="Rent">Rent</option>
+            </select>
+          </div> */}
+          {[
+            { key: "name", label: "Name" },
+            { key: "rob_model", label: "Robot Model" },
+            { key: "manufacturer", label: "Manufacturer" },
 
+            { key: "short_description", label: "Short Description" },
+            { key: "description", label: "Description" },
+
+            // 👇 Buy/Rent before price
+            {
+              key: "buy_rent",
+              label: "Buy / Rent",
+              type: "select",
+              options: ["Buy", "Rent"],
+            },
+
+            { key: "price", label: "Price" },
+            { key: "discount_price", label: "Discount Price" },
+            { key: "discount", label: "Discount" },
+            { key: "highlights", label: "Highlights (comma separated)" },
+
+            {
+              key: "product_used_places",
+              label: "Used Places (comma separated)",
+            },
+            { key: "dimensions", label: "Dimensions" },
+
+            { key: "screen", label: "Screen" },
+            { key: "camera", label: "Camera" },
+            { key: "body_colour", label: "Body Colour" },
+            { key: "mb_ram", label: "Memory" },
+            { key: "stand_by_time", label: "Stand by time" },
+            { key: "head_pitch_angle", label: "Head pitch angle" },
+            { key: "system", label: "System" },
+            {
+              key: "navigation_accuracy",
+              label: "Navigation Accuracy and Position Accuracy ",
+            },
+            { key: "weight", label: "Weight" },
+
+            { key: "max_speed", label: "Max Speed" },
+            { key: "battery_type", label: "Battery Type" },
+
+            { key: "battery_life", label: "Battery Capacity" },
+            { key: "charging_time", label: "Charging Time" },
+            { key: "sensors", label: "Sensors (comma separated)" },
+            { key: "connectivity", label: "Connectivity" },
+            { key: "material", label: "Material" },
+          ].map((field) => {
+            // 👇 Skip discount fields if Rent is selected
+            if (
+              formData.buy_rent === "Rent" &&
+              (field.key === "discount_price" || field.key === "discount")
+            ) {
+              return null;
+            }
+
+            return (
+              <div key={field.key}>
+                <label className="block text-sm font-medium mb-1">
+                  {field.label}
+                </label>
+
+                {field.type === "select" ? (
+                  <select
+                    value={formData[field.key] || field.options[0]}
+                    onChange={(e) =>
+                      setFormData({ ...formData, [field.key]: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border rounded-md border-gray-300"
+                  >
+                    {field.options.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={formData[field.key] || ""}
+                    onChange={(e) =>
+                      setFormData({ ...formData, [field.key]: e.target.value })
+                    }
+                    className={`w-full px-3 py-2 border rounded-md ${
+                      errors[field.key] ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+                )}
+
+                {errors[field.key] && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors[field.key]}
+                  </p>
+                )}
+              </div>
+            );
+          })}
 
           {/* 📄 Brochure Upload */}
           <div>
-            <label className="block text-sm font-medium mb-1">Brochure (PDF)</label>
+            <label className="block text-sm font-medium mb-1">
+              Brochure (PDF)
+            </label>
             <input
               type="file"
               accept="application/pdf"
@@ -644,12 +707,7 @@ rob_model: robot.p_model || "",
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={loading}>
-              {loading
-                ? "Saving..."
-                : editingRobot
-                ? "Update"
-                : "Add"}{" "}
-              Robot
+              {loading ? "Saving..." : editingRobot ? "Update" : "Add"} Robot
             </Button>
           </div>
         </div>
