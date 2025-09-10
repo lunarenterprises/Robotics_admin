@@ -10,7 +10,7 @@ type Blog = {
   title: string;
   description: string;
   client_name: string;
-  bl_category_tags:string;
+  bl_category_tags: string;
   client_location: string;
   image: string;
   date?: string;
@@ -32,14 +32,13 @@ export default function Casestudy() {
   }, []);
 
   const fetchBlogs = async () => {
-
-
-    const payload ={
-      type:'case_study'
-    }
+    const payload = {
+      type: "case_study",
+    };
     try {
       const res = await axios.post(
-        "https://lunarsenterprises.com:7001/robotics/list/blog",payload
+        "https://lunarsenterprises.com:7001/robotics/list/blog",
+        payload
       );
       if (res.data?.result && Array.isArray(res.data.list)) {
         const mapped: Blog[] = res.data.list.map((item: any) => ({
@@ -48,10 +47,10 @@ export default function Casestudy() {
           description: item.bl_description,
           client_name: item.bl_client_name,
           client_location: item.bl_client_location,
-          bl_category_tags:item.bl_category_tags,
-       image: item.bl_image
-  ? `https://lunarsenterprises.com:7001${item.bl_image}`
-  : "",
+          bl_category_tags: item.bl_category_tags,
+          image: item.bl_image
+            ? `https://lunarsenterprises.com:7001${item.bl_image}`
+            : "",
 
           date: item.bl_date,
           status: item.bl_status,
@@ -76,7 +75,7 @@ export default function Casestudy() {
       description: "",
       client_name: "",
       client_location: "",
-      bl_category_tags:""
+      bl_category_tags: "",
     });
     setFile(null);
     setPreview("");
@@ -127,19 +126,22 @@ export default function Casestudy() {
 
   const handleSave = async () => {
     if (!formData.title || !formData.client_name) return;
+    
+    if (!editing && !file) {
+      Swal.fire("Validation Error", "Image is required", "warning");
+      return;
+    }
 
     setLoading(true);
     const fd = new FormData();
     if (editing) fd.append("bl_id", editing.id);
 
-     fd.append("type" ,"case_study" || "");
+    fd.append("type", "case_study" || "");
 
     fd.append("title", formData.title!);
     fd.append("description", formData.description || "");
     fd.append("category_tags", formData.bl_category_tags || "");
 
-
-    
     fd.append("client_name", formData.client_name!);
     fd.append("client_location", formData.client_location || "");
     if (file) {
@@ -201,8 +203,6 @@ export default function Casestudy() {
               <th className="px-4 py-2 text-left">Client Name</th>
               <th className="px-4 py-2 text-left">Category Tags</th>
 
-
-              
               <th className="px-4 py-2 text-left">Client Location</th>
               <th className="px-4 py-2 text-left">Description</th>
               <th className="px-4 py-2 text-right">Actions</th>
@@ -267,7 +267,7 @@ export default function Casestudy() {
             className="w-full border rounded px-3 py-2"
           />
 
-               <input
+          <input
             type="text"
             placeholder="Category Tags (Seperation with comma)"
             value={formData.bl_category_tags || ""}

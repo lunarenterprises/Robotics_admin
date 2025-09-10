@@ -45,8 +45,8 @@ export default function Research() {
           id: String(item.bl_id),
           title: item.bl_title,
           description: item.bl_description,
-bl_date:item.bl_date,
-bl_category_tags:item.bl_category_tags,
+          bl_date: item.bl_date,
+          bl_category_tags: item.bl_category_tags,
           highlights: item.bl_highlights,
           image: item.bl_image
             ? `https://lunarsenterprises.com:7001${item.bl_image}`
@@ -124,12 +124,20 @@ bl_category_tags:item.bl_category_tags,
   };
 
   const handleSave = async () => {
-    if (!formData.title ) return;
+    if (!formData.title) return;
+    if (!editing && !file) {
+      Swal.fire(
+        "Validation Error",
+        "Image is required",
+        "warning"
+      );
+      return;
+    }
 
     setLoading(true);
     const fd = new FormData();
     if (editing) fd.append("bl_id", editing.id);
-     fd.append("type" ,"research" || "");
+    fd.append("type", "research" || "");
 
     fd.append("title", formData.title!);
     fd.append("description", formData.description || "");
@@ -191,8 +199,6 @@ bl_category_tags:item.bl_category_tags,
             <tr>
               <th className="px-4 py-2 text-left">Image</th>
               <th className="px-4 py-2 text-left">Title</th>
-          
-
 
               <th className="px-4 py-2 text-left">Category Tag</th>
               {/* <th className="px-4 py-2 text-left">Date</th> */}
@@ -222,7 +228,6 @@ bl_category_tags:item.bl_category_tags,
                 <td className="px-4 py-2">{b.bl_category_tags}</td>
                 {/* <td className="px-4 py-2">{b.bl_date}</td> */}
 
-                
                 <td className="px-4 py-2">{b.highlights}</td>
                 <td className="px-4 py-2 max-w-xs truncate">{b.description}</td>
                 <td className="px-4 py-2 text-right space-x-2">

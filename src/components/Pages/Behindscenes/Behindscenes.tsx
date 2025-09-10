@@ -120,8 +120,36 @@ export default function Behindscenes() {
     }
   };
 
+  const [errors, setErrors] = useState<Partial<Record<keyof Blog, string>>>({});
+
+  const validateForm = () => {
+  const newErrors: Partial<Record<keyof Blog, string>> = {};
+
+  if (!formData.title || formData.title.trim() === "") {
+    newErrors.title = "Title is required";
+  }
+  if (!formData.bl_category_tags || formData.bl_category_tags.trim() === "") {
+    newErrors.bl_category_tags = "Category tags are required";
+  }
+  if (!editing && !file) {
+    newErrors.image = "Image or Video is required";
+  }
+  setErrors(newErrors);
+  // ✅ return true if no errors
+  return Object.keys(newErrors).length === 0;
+};
+
+
+
   const handleSave = async () => {
-    if (!formData.title) return;
+    // if (!formData.title) return;
+
+    // if (!editing && !file) {
+    //   Swal.fire("Validation Error", "Image is required", "warning");
+    //   return;
+    // }
+
+    if (!validateForm()) return;
 
     setLoading(true);
     const fd = new FormData();
@@ -219,9 +247,7 @@ export default function Behindscenes() {
 
                 <td className="px-4 py-2">{b.title}</td>
                 <td className="px-4 py-2">{b.bl_category_tags}</td>
-                <td className="px-4 py-2 max-w-xs truncate">
-                  {b.description}
-                </td>
+                <td className="px-4 py-2 max-w-xs truncate">{b.description}</td>
                 <td className="px-4 py-2 text-right space-x-2">
                   <button
                     onClick={() => handleEdit(b)}
@@ -258,6 +284,7 @@ export default function Behindscenes() {
             }
             className="w-full border rounded px-3 py-2"
           />
+          {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
 
           <input
             type="text"
@@ -268,6 +295,7 @@ export default function Behindscenes() {
             }
             className="w-full border rounded px-3 py-2"
           />
+          {errors.bl_category_tags && <p className="text-red-500 text-sm">{errors.bl_category_tags}</p>}
 
           <textarea
             placeholder="Description"
@@ -284,6 +312,7 @@ export default function Behindscenes() {
             onChange={handleImageChange}
             className="w-full"
           />
+          {errors.bl_category_tags && <p className="text-red-500 text-sm">{errors.bl_category_tags}</p>}
 
           {preview && formData.file_type === "image" && (
             <img
