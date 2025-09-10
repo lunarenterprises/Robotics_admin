@@ -44,6 +44,8 @@ const AdminOrderHistory = () => {
         email: order.q_email || "N/A",
         phone: order.q_mobile,
         amount: order.q_amount,
+
+        robotname :order.p_name,
         status: order.q_status,
         orderDate: order.q_date?.split("T")[0],
         location: `${order.q_city}, ${order.q_contry}`,
@@ -200,7 +202,7 @@ const AdminOrderHistory = () => {
                 {orders.filter((o) => o.status === "Confirmed").length}
               </p>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
+            {/* <div className="bg-white p-4 rounded-lg shadow-sm">
               <h3 className="text-sm font-medium text-gray-500">
                 Total Revenue
               </h3>
@@ -212,7 +214,7 @@ const AdminOrderHistory = () => {
                     currency: "AED",
                   })}
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -328,12 +330,15 @@ const AdminOrderHistory = () => {
                       {new Date(order.orderDate).toLocaleDateString("en-IN")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        AED {order.amount.toLocaleString("en-AE")}
-                      </div>
+                  <div className="text-sm font-medium text-gray-900">
+  {order.amount != null
+    ? `AED ${order.amount.toLocaleString("en-AE")}`
+    : "N/A"}
+</div>
+
 
                       <div className="text-sm text-gray-500">
-                        {order.items} Robots •
+                        {order.items}  • {order.robotname} 
                       </div>
                     </td>
 
