@@ -341,11 +341,12 @@ export default function Robots() {
   };
 
 
-  useEffect(() => {
+useEffect(() => {
   const price = parseFloat(formData.price) || 0;
-  const discount = parseFloat(formData.discount) || 0;
+  const discount = parseFloat(formData.discount);
 
-  if (price && discount >= 0) {
+  // Only calculate if discount is provided (not empty and is a number)
+  if (price && !isNaN(discount)) {
     const discountPrice = price - (price * discount) / 100;
     setFormData((prev) => ({ ...prev, discount_price: discountPrice.toFixed(2) }));
   } else {
