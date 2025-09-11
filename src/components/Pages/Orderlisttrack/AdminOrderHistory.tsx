@@ -151,9 +151,9 @@ const AdminOrderHistory = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: "bg-yellow-100 text-yellow-800",
-      active: "bg-blue-100 text-blue-800",
-      shipped: "bg-purple-100 text-purple-800",
+      Pending: "bg-yellow-100 text-yellow-800",
+      Active: "bg-blue-100 text-blue-800",
+      Shipped: "bg-purple-100 text-purple-800",
       Paid: "bg-green-100 text-green-800",
       Cancelled: "bg-red-100 text-red-800",
     };
@@ -240,7 +240,7 @@ const AdminOrderHistory = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="All">All Status</option>
-              <option value="Pending">Pending</option>
+              <option value="pending">Pending</option>
               <option value="Confirmed">Confirmed</option>
               <option value="Shipped">Shipped</option>
               <option value="Delivered">Delivered</option>
@@ -355,7 +355,7 @@ const AdminOrderHistory = () => {
                           order.status
                         )}`}
                       >
-                        <option value="Pending">Pending</option>
+                        <option value="pending">Pending</option>
                         <option value="Confirmed">Confirmed</option>
                         <option value="Shipped">Shipped</option>
                         <option value="Delivered">Delivered</option>

@@ -343,17 +343,20 @@ export default function Robots() {
 
 useEffect(() => {
   const price = parseFloat(formData.price) || 0;
-  const discount = parseFloat(formData.discount);
+  const discount = formData.discount !== "" ? parseFloat(formData.discount) : null;
 
-  // Only calculate if discount is provided (not empty and is a number)
-  if (price && !isNaN(discount)) {
+  // Only calculate if discount is a valid number greater than 0
+  if (price && discount !== null && !isNaN(discount) && discount > 0) {
     const discountPrice = price - (price * discount) / 100;
-    setFormData((prev) => ({ ...prev, discount_price: discountPrice.toFixed(2) }));
+    setFormData((prev) => ({
+      ...prev,
+      discount_price: discountPrice.toFixed(2),
+    }));
   } else {
+    // No discount applied (empty or invalid) → leave blank
     setFormData((prev) => ({ ...prev, discount_price: "" }));
   }
 }, [formData.price, formData.discount]);
-
 
   return (
     <div className="space-y-6">
@@ -483,7 +486,7 @@ useEffect(() => {
             { key: "buy_rent", label: "Buy / Rent", type: "select", options: ["Buy", "Rent"] },
 
             { key: "price", label: "Price" },
-            { key: "discount", label: "Discount Percentage" },
+            { key: "discount", label: "Discount Percentage " },
             { key: "discount_price", label: "Discount Price" },
 
             { key: "highlights", label: "Highlights (comma separated)" },
