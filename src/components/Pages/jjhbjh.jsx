@@ -340,21 +340,6 @@ export default function Robots() {
     return badges[category] || "bg-gray-100 text-gray-800";
   };
 
-
-useEffect(() => {
-  const price = parseFloat(formData.price) || 0;
-  const discount = parseFloat(formData.discount);
-
-  // Only calculate if discount is provided (not empty and is a number)
-  if (price && !isNaN(discount)) {
-    const discountPrice = price - (price * discount) / 100;
-    setFormData((prev) => ({ ...prev, discount_price: discountPrice.toFixed(2) }));
-  } else {
-    setFormData((prev) => ({ ...prev, discount_price: "" }));
-  }
-}, [formData.price, formData.discount]);
-
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -465,13 +450,86 @@ useEffect(() => {
       )}
 
       {/* Modal */}
-   <Modal
+      <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingRobot ? "Edit Robot" : "Add Robot"}
         size="lg"
       >
         <div className="space-y-4">
+          {/* {[
+            { key: "name", label: "Name" },
+            { key: "rob_model", label: "Robot Model" },
+            { key: "manufacturer", label: "Manufacturer" },
+
+            { key: "short_description", label: "Short Description" },
+            { key: "description", label: "Description" },
+            { key: "price", label: "Price" },
+            { key: "discount_price", label: "Discount Price" },
+            { key: "discount", label: "Discount" },
+            { key: "highlights", label: "Highlights (comma separated)" },
+
+            {
+              key: "product_used_places",
+              label: "Used Places (comma separated)",
+            },
+            { key: "dimensions", label: "Dimensions" },
+
+            { key: "screen", label: "Screen" },
+            { key: "camera", label: "Camera" },
+            { key: "body_colour", label: "Body Colour" },
+            { key: "mb_ram", label: "Memory" },
+            { key: "stand_by_time", label: "Stand by time" },
+            { key: "head_pitch_angle", label: "Head pitch angle" },
+            { key: "system", label: "System" },
+            {
+              key: "navigation_accuracy",
+              label: "Navigation Accuracy and Position Accuracy ",
+            },
+            { key: "weight", label: "Weight" },
+
+            { key: "max_speed", label: "Max Speed" },
+            { key: "battery_type", label: "Battery Type" },
+
+            { key: "battery_life", label: "Battery Capacity" },
+            { key: "charging_time", label: "Charging Time" },
+            { key: "sensors", label: "Sensors (comma separated)" },
+            { key: "connectivity", label: "Connectivity" },
+            { key: "material", label: "Material" },
+          ].map((field) => (
+            <div key={field.key}>
+              <label className="block text-sm font-medium mb-1">
+                {field.label}
+              </label>
+              <input
+                type="text"
+                value={formData[field.key] || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, [field.key]: e.target.value })
+                }
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors[field.key] ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors[field.key] && (
+                <p className="text-sm text-red-500 mt-1">{errors[field.key]}</p>
+              )}
+            </div>
+          ))}
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Buy / Rent</label>
+            <select
+              value={formData.buy_rent || "buy"}
+              onChange={(e) =>
+                setFormData({ ...formData, buy_rent: e.target.value })
+              }
+              className="w-full px-3 py-2 border rounded-md border-gray-300"
+            >
+              <option value="Buy">Buy</option>
+              <option value="Rent">Rent</option>
+            </select>
+          </div> */}
           {[
             { key: "name", label: "Name" },
             { key: "rob_model", label: "Robot Model" },
@@ -480,15 +538,26 @@ useEffect(() => {
             { key: "short_description", label: "Short Description" },
             { key: "description", label: "Description" },
 
-            { key: "buy_rent", label: "Buy / Rent", type: "select", options: ["Buy", "Rent"] },
+            // 👇 Buy/Rent before price
+            {
+              key: "buy_rent",
+              label: "Buy / Rent",
+              type: "select",
+              options: ["Buy", "Rent"],
+            },
 
             { key: "price", label: "Price" },
-            { key: "discount", label: "Discount Percentage" },
+             { key: "discount", label: "Discount Percentage" },
             { key: "discount_price", label: "Discount Price" },
-
+           
             { key: "highlights", label: "Highlights (comma separated)" },
-            { key: "product_used_places", label: "Used Places (comma separated)" },
+
+            {
+              key: "product_used_places",
+              label: "Used Places (comma separated)",
+            },
             { key: "dimensions", label: "Dimensions" },
+
             { key: "screen", label: "Screen" },
             { key: "camera", label: "Camera" },
             { key: "body_colour", label: "Body Colour" },
@@ -496,24 +565,35 @@ useEffect(() => {
             { key: "stand_by_time", label: "Stand by time" },
             { key: "head_pitch_angle", label: "Head pitch angle" },
             { key: "system", label: "System" },
-            { key: "navigation_accuracy", label: "Navigation Accuracy and Position Accuracy " },
+            {
+              key: "navigation_accuracy",
+              label: "Navigation Accuracy and Position Accuracy ",
+            },
             { key: "weight", label: "Weight" },
+
             { key: "max_speed", label: "Max Speed" },
             { key: "battery_type", label: "Battery Type" },
+
             { key: "battery_life", label: "Battery Capacity" },
             { key: "charging_time", label: "Charging Time" },
             { key: "sensors", label: "Sensors (comma separated)" },
             { key: "connectivity", label: "Connectivity" },
             { key: "material", label: "Material" },
           ].map((field) => {
+            // 👇 Skip discount fields if Rent is selected
             if (
               formData.buy_rent === "Rent" &&
               (field.key === "discount_price" || field.key === "discount")
-            ) return null;
+            ) {
+              return null;
+            }
 
             return (
               <div key={field.key}>
-                <label className="block text-sm font-medium mb-1">{field.label}</label>
+                <label className="block text-sm font-medium mb-1">
+                  {field.label}
+                </label>
+
                 {field.type === "select" ? (
                   <select
                     value={formData[field.key] || field.options[0]}
@@ -528,13 +608,6 @@ useEffect(() => {
                       </option>
                     ))}
                   </select>
-                ) : field.key === "discount_price" ? (
-                  <input
-                    type="text"
-                    value={formData.discount_price || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border rounded-md border-gray-300 bg-gray-100"
-                  />
                 ) : (
                   <input
                     type="text"
@@ -547,87 +620,89 @@ useEffect(() => {
                     }`}
                   />
                 )}
+
+                {errors[field.key] && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors[field.key]}
+                  </p>
+                )}
               </div>
             );
           })}
 
-         {/* 📄 Brochure Upload */}
-               <div>
-                 <label className="block text-sm font-medium mb-1">
-                   Brochure (PDF)
-                 </label>
-                 <input
-                   type="file"
-                   accept="application/pdf"
-                   onChange={(e) => {
-                     const file = e.target.files[0];
-                     if (file) {
-                       setFormData({ ...formData, brochureFile: file });
-                     }
-                   }}
-                   className="w-full px-3 py-2 border rounded-md border-gray-300"
-                 />
-                 {formData.brochure && !formData.brochureFile && (
-                   <a
-                     href={`https://lunarsenterprises.com:7001${formData.brochure}`}
-                     target="_blank"
-                     rel="noopener noreferrer"
-                     className="text-blue-600 text-sm underline mt-1 block"
-                   >
-                     View Existing Brochure
-                   </a>
-                 )}
-                 {formData.brochureFile && (
-                   <p className="text-sm text-gray-600 mt-1">
-                     Selected: {formData.brochureFile.name}
-                   </p>
-                 )}
-               </div>
-     
-               {/* Image Upload */}
-               <div>
-                 <label className="block text-sm font-medium mb-1">Images</label>
-                 <input
-                   type="file"
-                   accept="image/*"
-                   multiple
-                   onChange={handleImageChange}
-                   className={`w-full px-3 py-2 border rounded-md ${
-                     errors.images ? "border-red-500" : "border-gray-300"
-                   }`}
-                 />
-                 {errors.images && (
-                   <p className="text-sm text-red-500 mt-1">{errors.images}</p>
-                 )}
-                 <div className="mt-3 flex flex-wrap gap-3">
-                   {imagePreviews.map((img, index) => (
-                     <div key={index} className="relative">
-                       <img
-                         src={img.src}
-                         alt={`Preview ${index}`}
-                         className="w-24 h-24 object-cover rounded"
-                       />
-                       <button
-                         type="button"
-                         onClick={() => removeImage(index)}
-                         className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                       >
-                         <X size={14} />
-                       </button>
-                       {!img.isNew && (
-                         <p className="absolute bottom-0 left-0 text-[10px] bg-gray-700 text-white px-1 rounded">
-                           ID: {img.id}
-                         </p>
-                       )}
-                     </div>
-                   ))}
-                 </div>
-               </div>
+          {/* 📄 Brochure Upload */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Brochure (PDF)
+            </label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  setFormData({ ...formData, brochureFile: file });
+                }
+              }}
+              className="w-full px-3 py-2 border rounded-md border-gray-300"
+            />
+            {formData.brochure && !formData.brochureFile && (
+              <a
+                href={`https://lunarsenterprises.com:7001${formData.brochure}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 text-sm underline mt-1 block"
+              >
+                View Existing Brochure
+              </a>
+            )}
+            {formData.brochureFile && (
+              <p className="text-sm text-gray-600 mt-1">
+                Selected: {formData.brochureFile.name}
+              </p>
+            )}
+          </div>
 
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Images</label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              className={`w-full px-3 py-2 border rounded-md ${
+                errors.images ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.images && (
+              <p className="text-sm text-red-500 mt-1">{errors.images}</p>
+            )}
+            <div className="mt-3 flex flex-wrap gap-3">
+              {imagePreviews.map((img, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={img.src}
+                    alt={`Preview ${index}`}
+                    className="w-24 h-24 object-cover rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                  >
+                    <X size={14} />
+                  </button>
+                  {!img.isNew && (
+                    <p className="absolute bottom-0 left-0 text-[10px] bg-gray-700 text-white px-1 rounded">
+                      ID: {img.id}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
 
-          
-
-     
           <div className="flex justify-end gap-3">
             <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
               Cancel
@@ -641,3 +716,6 @@ useEffect(() => {
     </div>
   );
 }
+
+
+
